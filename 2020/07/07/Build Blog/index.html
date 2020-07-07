@@ -15,12 +15,14 @@
 <meta property="og:site_name" content="Hexo">
 <meta property="og:description" content="部署环境Node.js下载Node.js官网下载 Node.js网盘下载  提取码：rgh8（永久有效） Git下载Git官网下载 Git网盘下载  提取码：3ep7（永久有效） 利用npm安装cnpm的镜像源npm install -g cnpm --registry&#x3D;https:&#x2F;&#x2F;registry.npm.taobao.org Hexo 安装cnpm install -g hexo-cli">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="c:%5CUsers%5C12279%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20200707164212746.png">
+<meta property="og:image" content="http://yoursite.com/2020/07/07/Build%20Blog/images/new_file_blog.png">
+<meta property="og:image" content="http://yoursite.com/2020/07/07/Build%20Blog/images/deploy_config.png">
+<meta property="og:image" content="http://yoursite.com/2020/07/07/Build%20Blog/images/theme_config.png">
 <meta property="article:published_time" content="2020-07-07T07:11:20.582Z">
-<meta property="article:modified_time" content="2020-07-07T13:40:46.910Z">
+<meta property="article:modified_time" content="2020-07-07T14:34:49.140Z">
 <meta property="article:author" content="John Doe">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="c:%5CUsers%5C12279%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20200707164212746.png">
+<meta name="twitter:image" content="http://yoursite.com/2020/07/07/Build%20Blog/images/new_file_blog.png">
   
     <link rel="alternative" href="/atom.xml" title="Hexo" type="application/atom+xml">
   
@@ -185,7 +187,7 @@
 <h2 id="初始化博客"><a href="#初始化博客" class="headerlink" title="初始化博客"></a>初始化博客</h2><ol>
 <li>在已知文件夹下建立一个空文件夹–&gt;blog</li>
 </ol>
-<p><img src="C:%5CUsers%5C12279%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20200707164212746.png" alt="image-20200707164212746"></p>
+<p><img src="images/new_file_blog.png" alt=""></p>
 <ol start="2">
 <li>在新建文件夹（Blog）所在目录右键点击“Git Bush Here”，输入以下命令：<code>hexo init blog</code></li>
 <li>本地启动Hexo博客：<code>hexo s</code>（此命令用于在平时写完博客后的预览）</li>
@@ -206,7 +208,7 @@
 <ol start="3">
 <li>设置”_config.yml”文件</li>
 </ol>
-<p>![image-20200707204926374](Build Blog.assets/image-20200707204926374.png)</p>
+<p><img src="images/deploy_config.png" alt=""></p>
 <ol start="4">
 <li>部署到远端：<code>hexo d</code></li>
 </ol>
@@ -214,7 +216,7 @@
 <li>从github上clone主题到themes目录：<code>git clone https://github.com/litten/hexo-theme-yilia.git themes/yilia</code></li>
 <li>修改”_config.yml”文件（将主题修改为将要使用的主题）</li>
 </ol>
-<p>![image-20200707213121820](Build Blog.assets/image-20200707213121820.png)</p>
+<p><img src="images/theme_config.png" alt=""></p>
 <ol start="3">
 <li><code>hexo clean</code>–&gt;<code>hexo g</code>–&gt;<code>hexo s</code>–&gt;<code>hexo d</code></li>
 </ol>
