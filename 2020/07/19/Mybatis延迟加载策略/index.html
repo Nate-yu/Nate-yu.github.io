@@ -79,14 +79,14 @@
 
 
 
-<meta name="description" content="开发主要流程">
+<meta name="description" content="概念 在需要用到数据时才进行加载，不需要用到数据时就不加载数据。延迟加载也称懒加载">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Mybatis的开发方式">
-<meta property="og:url" content="https://nate-yu.github.io/2020/07/10/Mybatis%E7%9A%84%E5%BC%80%E5%8F%91%E6%96%B9%E5%BC%8F/index.html">
+<meta property="og:title" content="Mybatis延迟加载策略">
+<meta property="og:url" content="https://nate-yu.github.io/2020/07/19/Mybatis%E5%BB%B6%E8%BF%9F%E5%8A%A0%E8%BD%BD%E7%AD%96%E7%95%A5/index.html">
 <meta property="og:site_name" content="Nate&#39;s blog">
-<meta property="og:description" content="开发主要流程">
-<meta property="article:published_time" content="2020-07-10T09:08:55.000Z">
-<meta property="article:modified_time" content="2020-07-10T12:36:06.929Z">
+<meta property="og:description" content="概念 在需要用到数据时才进行加载，不需要用到数据时就不加载数据。延迟加载也称懒加载">
+<meta property="article:published_time" content="2020-07-19T12:45:25.000Z">
+<meta property="article:modified_time" content="2020-07-19T13:35:07.343Z">
 <meta property="article:author" content="Nateyu">
 <meta property="article:tag" content="Mybatis">
 <meta name="twitter:card" content="summary">
@@ -119,13 +119,13 @@
 
 
 
-  <link rel="canonical" href="https://nate-yu.github.io/2020/07/10/Mybatis的开发方式/"/>
+  <link rel="canonical" href="https://nate-yu.github.io/2020/07/19/Mybatis延迟加载策略/"/>
 
 
 
 
 
-  <title>Mybatis的开发方式 | Nate's blog</title>
+  <title>Mybatis延迟加载策略 | Nate's blog</title>
   
 
 
@@ -253,7 +253,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://nate-yu.github.io/2020/07/10/Mybatis%E7%9A%84%E5%BC%80%E5%8F%91%E6%96%B9%E5%BC%8F/">
+    <link itemprop="mainEntityOfPage" href="https://nate-yu.github.io/2020/07/19/Mybatis%E5%BB%B6%E8%BF%9F%E5%8A%A0%E8%BD%BD%E7%AD%96%E7%95%A5/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Nateyu">
@@ -270,7 +270,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Mybatis的开发方式</h1>
+          <h1 class="post-title" itemprop="name headline">Mybatis延迟加载策略</h1>
         
 
         <div class="post-meta">
@@ -282,8 +282,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-07-10T17:08:55+08:00">
-                2020-07-10
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-07-19T20:45:25+08:00">
+                2020-07-19
               </time>
             
 
@@ -336,7 +336,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  347
+                  651
                 </span>
               
 
@@ -352,7 +352,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  1
+                  2
                 </span>
               
             </div>
@@ -373,25 +373,44 @@
       
 
       
-        <h2 id="开发主要流程"><a href="#开发主要流程" class="headerlink" title="开发主要流程"></a>开发主要流程</h2><a id="more"></a>
+        <h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><blockquote>
+<p>在需要用到数据时才进行加载，不需要用到数据时就不加载数据。延迟加载也称懒加载</p>
+</blockquote>
+<a id="more"></a>
 
+<h3 id="延迟加载优点"><a href="#延迟加载优点" class="headerlink" title="延迟加载优点"></a>延迟加载优点</h3><p>​    先从单表查询，需要时再从关联表去关联查询，大大提高数据库性能，因为查询单表要比关联查询多张表速度要快。</p>
+<h3 id="延迟加载缺点"><a href="#延迟加载缺点" class="headerlink" title="延迟加载缺点"></a>延迟加载缺点</h3><p>​    因为只有当需要用到数据时，才会进行数据库查询，这样在大批量数据查询时，因为查询工作也要消耗时间，所以可能造成用户等待时间变长，造成用户体验下降。</p>
+<h2 id="实现需求的方式"><a href="#实现需求的方式" class="headerlink" title="实现需求的方式"></a>实现需求的方式</h2><p>​    在Mybatis实现多表操作时，使用了<code>resultMap</code>来实现一对一，一对多，多对多关系的操作，使用了<code>association</code>、<code>collection</code>标签 实现一对一及一对多映射。而这二者同样具有延迟加载功能。</p>
+<h3 id="使用assocation标签实现延迟加载"><a href="#使用assocation标签实现延迟加载" class="headerlink" title="使用assocation标签实现延迟加载"></a>使用<code>assocation</code>标签实现延迟加载</h3><p>需求举例：在查询账户信息的同时查询用户信息</p>
 <ol>
-<li>读取配置文件<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">InputStream in = Resources.getResourceAsStream(<span class="string">"SqlMapConfig.xml"</span>);</span><br></pre></td></tr></table></figure>
-传入参数为主配置文件名</li>
-<li>创建SqlSessionFactory工厂<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">SqlSessionFactoryBuilder builder = <span class="keyword">new</span> SqlSessionFactoryBuilder();</span><br><span class="line">SqlSessionFactory factory = builder.build(in);</span><br></pre></td></tr></table></figure></li>
-<li>使用工厂生产SqlSession对象<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SqlSession session = factory.openSession();</span><br></pre></td></tr></table></figure></li>
-<li>使用SqlSession创建Dao接口的代理对象<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">UserDaoInte userDao = session.getMapper(UserDaoInte<span class="class">.<span class="keyword">class</span>)</span>;</span><br></pre></td></tr></table></figure></li>
-<li>使用代理对象执行方法<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">List&lt;User&gt; users = userDao.findAll();</span><br><span class="line"><span class="keyword">for</span> (User user : users) &#123;</span><br><span class="line">	System.out.println(user);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-<li>释放资源<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">session.close();</span><br><span class="line">in.close();</span><br></pre></td></tr></table></figure>
+<li><p>在定义封装account和user的<code>resultMap</code>中建立一对一关系映射</p>
+ <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">association</span> <span class="attr">property</span>=<span class="string">"user"</span> <span class="attr">column</span>=<span class="string">"uid"</span> <span class="attr">javaType</span>=<span class="string">"user"</span></span></span><br><span class="line"><span class="tag">             <span class="attr">select</span>=<span class="string">"com.example.dao.UserDaoInte.findById"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">association</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>select属性：查询用户的唯一标识<br>column属性：用户根据id查询时，所需要的参数的值</p>
+</li>
+<li><p>加入根据用户id查询账户列表</p>
+ <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">select</span> <span class="attr">id</span>=<span class="string">"findAccountByUid"</span> <span class="attr">resultType</span>=<span class="string">"account"</span>&gt;</span></span><br><span class="line">    select * from account where uid = #&#123;uid&#125;</span><br><span class="line"><span class="tag">&lt;/<span class="name">select</span>&gt;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>用户的映射文件</p>
+ <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">select</span> <span class="attr">id</span>=<span class="string">"findById"</span> <span class="attr">resultType</span>=<span class="string">"user"</span> <span class="attr">parameterType</span>=<span class="string">"int"</span> &gt;</span></span><br><span class="line">    select * from user where id = #&#123;uid&#125;</span><br><span class="line"><span class="tag">&lt;/<span class="name">select</span>&gt;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在主配置文件中开启延迟加载的支持</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">settings</span>&gt;</span> </span><br><span class="line">       <span class="tag">&lt;<span class="name">setting</span> <span class="attr">name</span>=<span class="string">"lazyLoadingEnabled"</span> <span class="attr">value</span>=<span class="string">"true"</span>/&gt;</span></span><br><span class="line">       <span class="tag">&lt;<span class="name">setting</span> <span class="attr">name</span>=<span class="string">"aggressiveLazyLoading"</span> <span class="attr">value</span>=<span class="string">"false"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">settings</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
 
 </li>
 </ol>
-<h2 id="xml文件开发"><a href="#xml文件开发" class="headerlink" title="xml文件开发"></a>xml文件开发</h2><p>xml文件开发需要在resources文件夹下建立实体类Dao对应的xml配置文件，此文件在上一篇博客<a href="https://nate-yu.github.io/2020/07/09/Mybatis环境搭建/#more">Mybatis环境搭建</a>中有提到，在此不作过多赘述。</p>
-<h2 id="注解开发"><a href="#注解开发" class="headerlink" title="注解开发"></a>注解开发</h2><ol>
-<li>删除实体类Dao对应的xml配置文件</li>
-<li>在持久层接口中加入如下注解<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/***</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Description</span> TODO 查询所有操作</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Param</span> []</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> 以List的形式返回查询到的数据</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Select</span>(<span class="string">"select * from user"</span>)</span><br><span class="line"><span class="function">List&lt;User&gt; <span class="title">findAll</span><span class="params">()</span></span>;</span><br></pre></td></tr></table></figure>
-即在方法前加入@Select(“Value”)，并将SQL语句作为参数传入其中即可</li>
-<li>在主配置文件中，使用class属性指定被注解的dao全限定类名<br>修改主配置文件如下：<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 指定映射配置文件的位置，即每个dao独立的配置文件</span></span><br><span class="line"><span class="comment">     如果是用注解来进行配置，应该使用class属性指定被注解的dao全限定类名</span></span><br><span class="line"><span class="comment">--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">mappers</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">mapper</span> <span class="attr">class</span>=<span class="string">"com.example.dao.UserDaoInte"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">mappers</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="使用collection标签实现延迟加载"><a href="#使用collection标签实现延迟加载" class="headerlink" title="使用collection标签实现延迟加载"></a>使用<code>collection</code>标签实现延迟加载</h3><p>需求举例：完成加载用户对象时，查询该用户所拥有的账户信息。</p>
+<ol>
+<li><p>在定义封装account和user的<code>resultMap</code>中建立一对一关系映射</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">collection</span> <span class="attr">property</span>=<span class="string">"accounts"</span> <span class="attr">ofType</span>=<span class="string">"account"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">select</span>=<span class="string">"com.example.dao.AccountDaoInte.findByUid"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">column</span>=<span class="string">"id"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">collection</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>select属性：查询account 列表的 sql 语句，所以填写的是该 sql 映射的 id<br>column属性：用于指定 select 属性的 sql 语句的参数来源，上面的参数来自于 user 的 id 列，所以就写成 id 这一个字段名<br>collection标签：主要用于加载关联的集合对象</p>
+</li>
+<li><p>编写账户持久层映射配置</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">select</span> <span class="attr">id</span>=<span class="string">"findAccountByUid"</span> <span class="attr">resultType</span>=<span class="string">"account"</span>&gt;</span></span><br><span class="line">    select * from account where uid = #&#123;uid&#125;</span><br><span class="line"><span class="tag">&lt;/<span class="name">select</span>&gt;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在主配置文件中开启延迟加载的支持</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">settings</span>&gt;</span> </span><br><span class="line">     <span class="tag">&lt;<span class="name">setting</span> <span class="attr">name</span>=<span class="string">"lazyLoadingEnabled"</span> <span class="attr">value</span>=<span class="string">"true"</span>/&gt;</span></span><br><span class="line">     <span class="tag">&lt;<span class="name">setting</span> <span class="attr">name</span>=<span class="string">"aggressiveLazyLoading"</span> <span class="attr">value</span>=<span class="string">"false"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">settings</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
 </li>
 </ol>
@@ -425,8 +444,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2020/07/09/Mybatis%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/" rel="next" title="Mybatis环境搭建">
-                <i class="fa fa-chevron-left"></i> Mybatis环境搭建
+              <a href="/2020/07/15/%E6%B5%85%E8%B0%88SqlMapConfig%E4%B8%BB%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6/" rel="next" title="浅谈SqlMapConfig主配置文件">
+                <i class="fa fa-chevron-left"></i> 浅谈SqlMapConfig主配置文件
               </a>
             
           </div>
@@ -434,10 +453,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2020/07/11/%E5%9F%BA%E4%BA%8EGoogleChrome%E7%9A%84%E7%A7%91%E5%AD%A6%E4%B8%8A%E7%BD%91%E6%95%99%E7%A8%8B/" rel="prev" title="基于GoogleChrome的科学上网教程">
-                基于GoogleChrome的科学上网教程 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -603,7 +618,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#开发主要流程"><span class="nav-number">1.</span> <span class="nav-text">开发主要流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#xml文件开发"><span class="nav-number">2.</span> <span class="nav-text">xml文件开发</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#注解开发"><span class="nav-number">3.</span> <span class="nav-text">注解开发</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#概念"><span class="nav-number">1.</span> <span class="nav-text">概念</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#延迟加载优点"><span class="nav-number">1.1.</span> <span class="nav-text">延迟加载优点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#延迟加载缺点"><span class="nav-number">1.2.</span> <span class="nav-text">延迟加载缺点</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实现需求的方式"><span class="nav-number">2.</span> <span class="nav-text">实现需求的方式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#使用assocation标签实现延迟加载"><span class="nav-number">2.1.</span> <span class="nav-text">使用assocation标签实现延迟加载</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用collection标签实现延迟加载"><span class="nav-number">2.2.</span> <span class="nav-text">使用collection标签实现延迟加载</span></a></li></ol></li></ol></div>
             
 
           </div>
